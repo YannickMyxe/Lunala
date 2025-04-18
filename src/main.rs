@@ -6,7 +6,7 @@ use crate::parser::Parser;
 mod tokens;
 mod parser;
 mod errors;
-mod expressions;
+mod tree;
 
 fn main() -> Result<(), errors::LunalaErrors > {
     println!("Starting Lunala!");
