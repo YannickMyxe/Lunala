@@ -1,30 +1,29 @@
-
+use crate::tokens::TokenType;
 
 pub struct Tree {
-    root: Node,
+    root: Expression,
 }
 
-pub enum Node {
+#[derive(Debug)]
+pub enum Expression {
     Literal(Literal),
     Unary {
-        operator: Operator,
-        expression: Box<Node>,
+        operator: TokenType,
+        expression: Box<Expression>,
     },
     Binary {
-        operator: Operator,
-        left: Box<Node>,
-        right: Box<Node>,
+        operator: TokenType,
+        left: Box<Expression>,
+        right: Box<Expression>,
     },
+    Grouping {
+        expression: Box<Expression>,
+    }
 }
 
-pub enum Operator {
-    Plus, Minus,
-    Times, Divide,
-    Bang,
-}
-
+#[derive(Debug)]
 pub enum Literal {
-    Number(Number),
+    Number(i32),
     String(String),
 }
 
@@ -42,11 +41,10 @@ pub enum Float {
 }
 
 impl Tree {
-    pub fn new(root: Node) -> Self {
+    pub fn new(root: Expression) -> Self {
         Self { root }
     }
 }
 
-impl Node {
-
+impl Expression {
 }

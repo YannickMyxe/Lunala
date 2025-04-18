@@ -24,7 +24,7 @@ impl std::fmt::Display for Token {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum TokenType {
     Slash, Comment,
 
