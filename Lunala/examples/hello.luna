@@ -1,0 +1,9 @@
+// This is the package name
+package Hello {
+
+    // A function returning hello world
+    fn hello() {
+        print("Hello, world!");
+    }
+
+}
