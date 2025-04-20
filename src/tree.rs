@@ -1,23 +1,24 @@
 use crate::tokens::TokenType;
 
-pub struct Tree {
-    root: Expression,
+pub struct Expression {
+    expression_type: ExpType,
+    
 }
 
 #[derive(Debug)]
-pub enum Expression {
+pub enum ExpType {
     Literal(Literal),
     Unary {
         operator: TokenType,
-        expression: Box<Expression>,
+        expression: Box<ExpType>,
     },
     Binary {
         operator: TokenType,
-        left: Box<Expression>,
-        right: Box<Expression>,
+        left: Box<ExpType>,
+        right: Box<ExpType>,
     },
     Grouping {
-        expression: Box<Expression>,
+        expression: Box<ExpType>,
     }
 }
 
@@ -40,11 +41,5 @@ pub enum Float {
     F16, F32, F64, F128,
 }
 
-impl Tree {
-    pub fn new(root: Expression) -> Self {
-        Self { root }
-    }
-}
-
-impl Expression {
+impl ExpType {
 }

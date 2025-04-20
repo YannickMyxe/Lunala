@@ -1,7 +1,7 @@
 use crate::scanner::Scanner;
 use crate::tokens::TokenType;
-use crate::tree::Expression::{Binary, Grouping, Unary};
-use crate::tree::{Expression, Literal};
+use crate::tree::ExpType::{Binary, Grouping, Unary};
+use crate::tree::{ExpType, Literal};
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
@@ -10,6 +10,7 @@ mod tokens;
 mod scanner;
 mod errors;
 mod tree;
+mod parser;
 
 fn main() -> Result<(), errors::LunalaErrors > {
     println!("Starting Lunala!");
@@ -31,11 +32,11 @@ fn main() -> Result<(), errors::LunalaErrors > {
         operator: TokenType::Star,
         left: Box::from(Unary {
             operator: TokenType::Minus,
-            expression: Box::from(Expression::Literal(Literal::Number(32)))
+            expression: Box::from(ExpType::Literal(Literal::Number(32)))
         }),
         right: Box::from(
             Grouping {
-                expression: Box::from(Expression::Literal(Literal::Number(32))),
+                expression: Box::from(ExpType::Literal(Literal::Number(32))),
             }
         )
     };
