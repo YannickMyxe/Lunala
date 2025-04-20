@@ -41,7 +41,9 @@ pub enum TokenType {
 
     And, Or, If, Let,
 
-    Package, Function, Print
+    Package, Function, Print,
+    
+    EOF,
 }
 
 impl TokenType {
@@ -80,6 +82,7 @@ impl TokenType {
             TokenType::If => {"If"}
             TokenType::Let => {"Let"}
             TokenType::Identifier => {"Identifier"}
+            TokenType::EOF => {"End of File"}
         }.to_owned()
     }
 }

@@ -121,6 +121,7 @@ impl Scanner {
                 &_ => { return self.error(ErrorTypes::InvalidToken(current_token_binding.to_string())); },
             };
         }
+        self.add(TokenType::EOF);
         Ok(self.tokens.clone())
     }
 
