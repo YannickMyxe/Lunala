@@ -1,4 +1,4 @@
-use crate::parser::Parser;
+use crate::scanner::Scanner;
 use crate::tokens::TokenType;
 use crate::tree::Expression::{Binary, Grouping, Unary};
 use crate::tree::{Expression, Literal};
@@ -7,7 +7,7 @@ use std::io::Read;
 use std::path::Path;
 
 mod tokens;
-mod parser;
+mod scanner;
 mod errors;
 mod tree;
 
@@ -18,8 +18,8 @@ fn main() -> Result<(), errors::LunalaErrors > {
     let mut contents = String::new();
     file.read_to_string(&mut contents).expect("couldn't read file");
 
-    let mut parser = Parser::new(contents.as_str());
-    let tokens = parser.scan_tokens()?;
+    let mut scanner = Scanner::new(contents.as_str());
+    let tokens = scanner.scan_tokens()?;
 
     println!("\nTokens:[ ");
     for token in tokens {

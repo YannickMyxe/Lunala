@@ -2,15 +2,15 @@ use crate::tokens::{ReservedKeywords, Token, TokenType};
 use crate::errors;
 use crate::errors::{ErrorTypes, LunalaErrors};
 
-pub struct Parser {
+pub struct Scanner {
     source: Vec<char>,
     tokens: Vec<Token>,
     cursor: usize,
 }
 
-impl Parser {
-    pub fn new(source: &str) -> Parser {
-        Parser { source: source.chars().collect(), tokens: Vec::new(), cursor: 0 }
+impl Scanner {
+    pub fn new(source: &str) -> Scanner {
+        Scanner { source: source.chars().collect(), tokens: Vec::new(), cursor: 0 }
     }
 
     pub fn current(&self) -> Option<&char> {
