@@ -29,8 +29,7 @@ impl Parser {
         let mut expression = self.comparison();
 
         match self.peek()?.token_type() {
-            TokenType::Bang | TokenType::BangEquals
-            => {
+            TokenType::Bang | TokenType::BangEquals => {
                 self.advance()?;
                 let operator = self.previous()?.clone();
                 let right = Box::new(self.comparison()?);
@@ -49,8 +48,7 @@ impl Parser {
         let mut expression = self.term();
 
         match self.peek()?.token_type() {
-            TokenType::LessThan | TokenType::LessEquals | TokenType::GreaterThan | TokenType::GreaterEquals
-            => {
+            TokenType::LessThan | TokenType::LessEquals | TokenType::GreaterThan | TokenType::GreaterEquals => {
                 self.advance()?;
                 let operator = self.previous()?.clone();
                 let right = Box::new(self.term()?);
@@ -106,7 +104,7 @@ impl Parser {
             TokenType::Minus | TokenType::Bang => {
                 self.advance()?;
                 let operator = self.previous()?.clone();
-                //println!("Unary: [{}, {}]", operator.clone(), self.peek()?);
+                println!("Unary: [{}, {}]", operator.clone(), self.peek()?);
                 Ok(Unary {operator, expression: Box::from(self.unary()?) })
             },
             _ => {
@@ -116,7 +114,7 @@ impl Parser {
     }
 
     fn primary(&mut self) -> Result<ExpType, LunalaErrors> {
-        //println!("Literal [{}]", self.peek()?);
+        println!("Literal [{}]", self.peek()?);
         let expression = match self.peek()?.token_type() {
             TokenType::True => {
                 self.advance()?;
@@ -136,9 +134,8 @@ impl Parser {
                 self.advance()?;
                 let expression = self.expression()?;
                 self.consume(TokenType::RightBracket, "Expected a `)` after expression.")?;
-                Grouping {
-                    expression: Box::new(expression),
-                }
+                println!("Group: [{}]", expression);
+                Grouping { expression: Box::new(expression), }
             },
             _ => { return Err(LunalaErrors::new(ErrorTypes::ExpressionExpected(self.peek()?.to_string()), self.cursor)) }
         };
