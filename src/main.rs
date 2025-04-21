@@ -1,11 +1,10 @@
 use crate::errors::LunalaErrors;
-use crate::interpreter::{Interpreter, Object};
+use crate::interpreter::{Interpreter};
 use crate::scanner::Scanner;
 use std::fs::File;
 use std::io;
 use std::io::{stdout, Read, Write};
 use std::path::Path;
-use crate::tree::Precision;
 
 mod tokens;
 mod scanner;
@@ -29,8 +28,8 @@ fn main() -> Result<(), LunalaErrors> {
     Ok(())
 }
 
-fn interpret(buffer: &String) -> Result<(), LunalaErrors> {
-    let mut scanner = Scanner::new(&buffer);
+fn interpret(buffer: &str) -> Result<(), LunalaErrors> {
+    let mut scanner = Scanner::new(buffer);
     let mut parser = parser::Parser::new(scanner.scan_tokens()?);
 
     let expr = parser.parse()?;
@@ -76,6 +75,9 @@ fn handle_repl() -> Result<(), LunalaErrors> {
 
 #[test]
 fn test_expression_parsing() {
+    use crate::tree::Precision;
+    use crate::interpreter::{Object};
+    
     // Mock tokens for the input: -2 + (8.5 - 3.5) - 4
     let contents = String::from("-2 + (8.5 - 3.5) + 4");
     let mut scanner = Scanner::new(&contents);
