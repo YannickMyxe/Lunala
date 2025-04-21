@@ -42,5 +42,5 @@ fn handle_file(buffer: &mut String) {
 
 fn handle_repl(buffer: &mut String) {
     println!("Lunala> ");
-    buffer.push_str("2 + ( 5 - 3 ) - 1");
+    buffer.push_str("2.5 + ( 5.5 - 3 ) - 1");
 }
