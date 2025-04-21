@@ -36,7 +36,7 @@ impl Scanner {
     }
 
     fn add_token(&mut self, token: Token) {
-        println!("[{}] Added token: {}", self.tokens.len(), token,);
+        //println!("[{}] Added token: {}", self.tokens.len(), token,);
         self.tokens.push(token);
     }
 
