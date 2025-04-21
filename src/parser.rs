@@ -33,7 +33,7 @@ impl Parser {
                 self.advance()?;
                 let operator = self.previous()?.clone();
                 let right = Box::from(self.comparison()?);
-                println!("Equality: [{}, {}]", operator, right);
+                //println!("Equality: [{}, {}]", operator, right);
                 expression = Ok(Binary {
                     operator, right,
                     left: Box::from(expression?),
@@ -72,7 +72,7 @@ impl Parser {
                 self.advance()?;
                 let operator = self.previous()?.clone();
                 let right = Box::from(self.factor()?);
-                println!("Binary-Term: [{:?}, {}, {}]", expression, operator, right);
+                //println!("Binary-Term: [{:?}, {}, {}]", expression, operator, right);
                 expression = Ok(Binary {
                     operator, right,
                     left: Box::from(expression?),
@@ -91,7 +91,7 @@ impl Parser {
                 self.advance()?;
                 let operator = self.previous()?.clone();
                 let right = Box::from(self.unary()?);
-                println!("Binary-Factor: [{}]", operator);
+                //println!("Binary-Factor: [{}]", operator);
                 expression = Ok(Binary {
                     operator, right,
                     left: Box::from(expression?)
@@ -107,7 +107,7 @@ impl Parser {
             TokenType::Minus | TokenType::Bang => {
                 self.advance()?;
                 let operator = self.previous()?.clone();
-                println!("Unary: [{}, {}]", operator.clone(), self.peek()?);
+                //println!("Unary: [{}, {}]", operator.clone(), self.peek()?);
                 Ok(Unary {operator, expression: Box::from(self.unary()?) })
             },
             _ => {
@@ -117,7 +117,7 @@ impl Parser {
     }
 
     fn primary(&mut self) -> Result<ExpType, LunalaErrors> {
-        println!("Literal [{}]", self.peek()?);
+        //println!("Literal [{}]", self.peek()?);
         let expression = match self.peek()?.token_type() {
             TokenType::True => {
                 self.advance()?;
@@ -137,7 +137,7 @@ impl Parser {
                 self.advance()?;
                 let expression = self.expression()?;
                 self.consume(TokenType::RightBracket, "Expected a `)` after expression.")?;
-                println!("Group: [{}]", expression);
+                //println!("Group: [{}]", expression);
                 Grouping { expression: Box::from(expression), }
             },
             _ => { return Err(LunalaErrors::new(ErrorTypes::ExpressionExpected(self.peek()?.to_string()), self.cursor)) }
