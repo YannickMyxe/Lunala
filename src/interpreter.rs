@@ -4,7 +4,7 @@ use crate::tree::{ExpType, Expression, Literal};
 
 pub struct Interpreter {}
 
-type Object = Literal;
+pub type Object = Literal;
 
 impl Object {
     fn from_literal(literal: Literal) -> Object {
