@@ -12,7 +12,7 @@ impl Parser {
     pub fn new(tokens: Vec<Token>) -> Parser {
         Parser { tokens, cursor: 0 }
     }
-    
+
     pub fn _get_tokens(&self) -> Vec<Token> {
         self.tokens.clone()
     }
@@ -29,13 +29,14 @@ impl Parser {
         let mut expression = self.comparison();
 
         match self.peek()?.token_type() {
-            TokenType::Bang | TokenType::BangEquals => {
+            TokenType::BangEquals | TokenType::DoubleEquals => {
                 self.advance()?;
                 let operator = self.previous()?.clone();
-                let right = Box::new(self.comparison()?);
+                let right = Box::from(self.comparison()?);
+                println!("Equality: [{}, {}]", operator, right);
                 expression = Ok(Binary {
                     operator, right,
-                    left: Box::new(expression?),
+                    left: Box::from(expression?),
                 })
             }
             _ => {  }
@@ -51,10 +52,10 @@ impl Parser {
             TokenType::LessThan | TokenType::LessEquals | TokenType::GreaterThan | TokenType::GreaterEquals => {
                 self.advance()?;
                 let operator = self.previous()?.clone();
-                let right = Box::new(self.term()?);
+                let right = Box::from(self.term()?);
                 expression = Ok(Binary {
                     operator, right,
-                    left: Box::new(expression?),
+                    left: Box::from(expression?),
                 })
             }
             _ => {  }
@@ -71,9 +72,10 @@ impl Parser {
                 self.advance()?;
                 let operator = self.previous()?.clone();
                 let right = Box::from(self.factor()?);
+                println!("Binary-Term: [{:?}, {}, {}]", expression, operator, right);
                 expression = Ok(Binary {
                     operator, right,
-                    left: Box::new(expression?),
+                    left: Box::from(expression?),
                 })
             },
             _ => {  }
@@ -89,6 +91,7 @@ impl Parser {
                 self.advance()?;
                 let operator = self.previous()?.clone();
                 let right = Box::from(self.unary()?);
+                println!("Binary-Factor: [{}]", operator);
                 expression = Ok(Binary {
                     operator, right,
                     left: Box::from(expression?)
@@ -124,7 +127,7 @@ impl Parser {
                 ExpType::Literal(Literal::Bool(false)) },
             TokenType::Number => {
                 self.advance()?;
-                ExpType::Literal( Literal::new_number(self.previous()?)?)
+                ExpType::Literal(Literal::new_number(self.previous()?)?)
             },
             TokenType::String => {
                 self.advance()?;
@@ -135,7 +138,7 @@ impl Parser {
                 let expression = self.expression()?;
                 self.consume(TokenType::RightBracket, "Expected a `)` after expression.")?;
                 println!("Group: [{}]", expression);
-                Grouping { expression: Box::new(expression), }
+                Grouping { expression: Box::from(expression), }
             },
             _ => { return Err(LunalaErrors::new(ErrorTypes::ExpressionExpected(self.peek()?.to_string()), self.cursor)) }
         };
