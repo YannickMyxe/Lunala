@@ -28,7 +28,7 @@ impl Token {
 
 impl std::fmt::Display for Token {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "[{} _{}", self.token_type, self._line)?;
+        write!(f, "[{}", self.token_type)?;
         if let Some(ref lexeme) = self.lexeme { write!(f, ", {}", lexeme)? }
         write!(f, "]")
     }

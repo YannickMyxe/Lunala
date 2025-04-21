@@ -24,6 +24,7 @@ pub enum ExpType {
 }
 
 #[derive(Debug, Clone)]
+#[derive(PartialEq)]
 pub enum Literal {
     Number(f32),
     Bool(bool),
@@ -46,6 +47,10 @@ pub enum _Float {
 impl Expression {
     pub fn new(expression_type: ExpType) -> Expression {
         Expression { expression_type }
+    }
+    
+    pub fn _get_type(&self) -> ExpType {
+        self.expression_type.clone()
     }
 }
 
@@ -92,7 +97,7 @@ impl Literal {
         match value {
             Ok(value) => Ok(Literal::Number(value)),
             Err(err) => Err(LunalaErrors::new(
-                ErrorTypes::LexemeErrorNotANumber(token.clone(), err), 0
+                ErrorTypes::ErrorNotANumber(token.to_string(), Some(err)), 0
             ))
         }
     }
@@ -102,6 +107,13 @@ impl Literal {
             Literal::Number(value) => value.to_string(),
             Literal::Bool(value) => value.to_string(),
             Literal::String(value) => value.to_string(),
+        }
+    }
+    
+    pub fn _get_number(&self) -> Result<f32, LunalaErrors> {
+        match self {
+            Literal::Number(value) => Ok(*value),
+            _ => Err(LunalaErrors::new(ErrorTypes::ErrorNotANumber(self.get_string(), None), 0))
         }
     }
 }

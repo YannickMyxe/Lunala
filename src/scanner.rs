@@ -24,7 +24,7 @@ impl Scanner {
     }
     
     pub fn peek(&self) -> Option<&char> {
-        self.source.get(self.cursor)
+       self.source.get(self.cursor + 1)
     }
     
     fn _pop(&self) -> Option<&char> {
@@ -46,20 +46,21 @@ impl Scanner {
 
     pub fn scan_tokens(&mut self) -> Result<Vec<Token>, LunalaErrors> {
         while !self.at_end() {
-            let current_char = match self.advance() {
+            let current_char = match self.advance().cloned() {
                 Some(c) => c,
                 None => break,
             };
-            let current_token_binding = *current_char;
+            let current_token_binding = current_char;
             
-            if current_char.is_ascii_whitespace() { continue; }
-            if current_char.is_numeric() { self.number(); self.cursor-=1; continue; }
-            if current_char.is_alphabetic() { self.alpha(); self.cursor-=1; continue; }
+            if current_char.is_whitespace() { continue; }
 
             //println!("c[{}]", current_char);
             
-            match current_char {
-                '/' => {
+            if current_char.is_numeric() { self.number(); continue; }
+            if current_char.is_alphabetic() { self.alpha(); continue; }
+            
+            match (current_char, self.peek()) {
+                ('/', _) => {
                     match self.peek() {
                         Some('/') => {
                                 self.add(TokenType::Comment);
@@ -70,48 +71,28 @@ impl Scanner {
                         }
                     }
                 },
-                '*' => { self.add(TokenType::Star) },
-                '=' => {
-                    match self.peek() {
-                        Some('=') => {
-                            self.add(TokenType::DoubleEquals);
-                        },
-                        None | Some(_) => {
-                            self.add(TokenType::Equals)
-                        }
-                    }
+                ('*', _) => { self.add(TokenType::Star) },
+                ('=', Some('=')) => {
+                    self.advance();
+                    self.add(TokenType::DoubleEquals);
                 },
-                '<' => { 
-                    match self.peek() {
-                        Some('=') => { 
-                            self.add(TokenType::LessEquals);
-                        },
-                        None | Some(_) => {
-                            self.add(TokenType::LessThan)
-                        }
-                    }
-                },
-                '>' => {
-                    match self.peek() {
-                        Some('=') => {
-                            self.add(TokenType::GreaterEquals);
-                        },
-                        None | Some(_) => {
-                            self.add(TokenType::GreaterThan)
-                        }
-                    }
-                },
-                '!' => {
-                    match self.peek() {
-                        Some('=') => {
-                            self.add(TokenType::BangEquals);
-                        },
-                        None | Some(_) => {
-                            self.add(TokenType::Bang)
-                        }
-                    }
-                },
-                '"' => {
+                ('=', _) => { self.add(TokenType::Equals) },
+                ('<', Some('=')) => {
+                    self.advance();
+                    self.add(TokenType::LessEquals);
+                }
+                ('<', _) => { self.add(TokenType::LessThan) },
+                ('>', Some('=')) => {
+                    self.advance();
+                    self.add(TokenType::GreaterEquals);
+                }
+                ('>', _) => { self.add(TokenType::GreaterThan) },
+                ('!', Some('=') ) => {
+                    self.advance();
+                    self.add(TokenType::BangEquals);
+                }
+                ('!', _) => { self.add(TokenType::Bang) },
+                ('"', _) => {
                     let start = self.cursor;
                     let _ = self.advance();
                     while self.peek() != Some(&'"') && !self.at_end() {
@@ -125,20 +106,20 @@ impl Scanner {
                     self.add_token(Token::new(TokenType::String, Some(value), self.cursor));
                     self.cursor-=1;
                 },
-                ';' => { self.add(TokenType::Semicolon) },
-                '+' => { self.add(TokenType::Plus)},
-                '.' => { self.add(TokenType::Dot) },
-                '{' => { self.add(TokenType::LeftCurlyBracket) },
-                '}' => { self.add(TokenType::RightCurlyBracket) },
-                '[' => { self.add(TokenType::LeftSquareBracket) },
-                ']' => { self.add(TokenType::RightSquareBracket) },
-                '(' => { self.add(TokenType::LeftBracket) },
-                ')' => { self.add(TokenType::RightBracket) },
-                '-' => { self.add(TokenType::Minus) },
-                '%' => { self.add(TokenType::Percent) },
-                ':' => { self.add(TokenType::Colon) },
-                '\'' => { self.add(TokenType::SingleQuote) },
-                '`' => { self.add(TokenType::AltQuote) }
+                (';', _) => { self.add(TokenType::Semicolon) },
+                ('+', _) => { self.add(TokenType::Plus)}
+                ('-', _) => { self.add(TokenType::Minus) },
+                ('.', _) => { self.add(TokenType::Dot) },
+                ('{', _) => { self.add(TokenType::LeftCurlyBracket) },
+                ('}', _) => { self.add(TokenType::RightCurlyBracket) },
+                ('[', _) => { self.add(TokenType::LeftSquareBracket) },
+                (']', _) => { self.add(TokenType::RightSquareBracket) },
+                ('(', _) => { self.add(TokenType::LeftBracket) },
+                (')', _) => { self.add(TokenType::RightBracket) },
+                ('%', _) => { self.add(TokenType::Percent) },
+                (':', _) => { self.add(TokenType::Colon) },
+                ('\'', _) => { self.add(TokenType::SingleQuote) },
+                ('`', _) => { self.add(TokenType::AltQuote) }
                 _ => { return self.error(ErrorTypes::InvalidToken(current_token_binding.to_string())); },
             };
         }
@@ -169,7 +150,7 @@ impl Scanner {
                 let _ = self.advance();
             }
         }
-        let value: String = self.source[start..self.cursor].iter().collect();
+        let value: String = self.source[start..self.cursor+1].iter().collect();
         self.add_token(Token::new(TokenType::Number, Some(value), self.cursor));
     }
 
@@ -186,7 +167,7 @@ impl Scanner {
             let _ = self.advance();
         }
         let keywords = ReservedKeywords::new();
-        let value: String = self.source[start..self.cursor].iter().collect();
+        let value: String = self.source[start..self.cursor+1].iter().collect();
         match keywords.get(value.clone()) {
             Some(token_type) => {
                 self.add_token(Token::new(token_type.clone(), None, self.cursor));
@@ -195,6 +176,10 @@ impl Scanner {
                 self.add_token(Token::new(TokenType::Identifier, Some(value), self.cursor));
             }
         }
+    }
+    
+    pub fn _get_tokens(&self) -> Vec<Token> {
+        self.tokens.clone()
     }
 
 }

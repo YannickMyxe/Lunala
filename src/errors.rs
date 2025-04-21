@@ -1,5 +1,6 @@
-use std::num::ParseFloatError;
 use crate::tokens::Token;
+use crate::tree::ExpType;
+use std::num::ParseFloatError;
 
 pub struct LunalaErrors {
     e_type: ErrorTypes,
@@ -16,20 +17,36 @@ pub enum ErrorTypes {
     InvalidToken(String),
     UnterminatedString,
     NoPreviousItem(usize),
-    LexemeErrorNotANumber(Token, ParseFloatError),
+    ErrorNotANumber(String, Option<ParseFloatError>),
     Error(String),
-    ExpressionExpected,
+    ExpressionExpected(String),
+    NotABooleanValue(String),
+    InvalidUnaryExpression(Token, ExpType),
 }
 
 impl ErrorTypes {
     fn map_error(&self) -> String {
         match self {
-            ErrorTypes::InvalidToken(token) => { format!("Invalid token: {}", token) }
+            ErrorTypes::InvalidToken(token) => { format!("Invalid token: `{}`", token) }
             ErrorTypes::UnterminatedString => { "Unterminated string".to_string() }
             ErrorTypes::NoPreviousItem(location) => { format!("No previous item found at location: {}", location) }
-            ErrorTypes::LexemeErrorNotANumber(token, err) => {format!("Cannot convert lexeme `{}` to a number, reason -> {}", token, err)}
+            ErrorTypes::ErrorNotANumber(token, err) => {
+                let err_msg = match err {
+                    None => {"".to_string()}
+                    Some(err) => {
+                        format!(", reason -> {}", err)
+                    }
+                };
+                format!("Cannot convert `{}` to a number{}", token, err_msg)
+            }
             ErrorTypes::Error(message) => { format!("Error occurred: {}", message) }
-            ErrorTypes::ExpressionExpected => {"Expected an expression".to_string()}
+            ErrorTypes::ExpressionExpected(message) => { format!("Expected an expression, got: {}", message) }            
+            ErrorTypes::NotABooleanValue(val) => {
+                format!("Expected a boolean, found {}", val)
+            }
+            ErrorTypes::InvalidUnaryExpression(operator, exp) => {
+                format!("Invalid unary expression: [{}, {}]", operator, exp)
+            }
         }.to_owned()
     }
 }

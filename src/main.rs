@@ -3,12 +3,14 @@ use std::fs::File;
 use std::io::Read;
 use std::path::Path;
 use crate::errors::LunalaErrors;
+use crate::interpreter::{Interpreter};
 
 mod tokens;
 mod scanner;
 mod errors;
 mod tree;
 mod parser;
+mod interpreter;
 
 fn main() -> Result<(), LunalaErrors> {
     println!("[Lunala]");
@@ -27,8 +29,10 @@ fn main() -> Result<(), LunalaErrors> {
     let mut parser = parser::Parser::new(scanner.scan_tokens()?);
     
     let expr = parser.parse()?;
-    
     println!("Exp=> {}", expr);
+    
+    let obj = Interpreter::interpret(expr)?;
+    println!("[Lunala]> {}", obj);
     
     Ok(())
 }
@@ -41,6 +45,8 @@ fn handle_file(buffer: &mut String) {
 }
 
 fn handle_repl(buffer: &mut String) {
-    println!("Lunala> ");
-    buffer.push_str("2.5 + ( 5.5 - 3 ) - 1");
+    buffer.push_str("2 + ( 8.5 - 3.5 )");
+    //buffer.push_str("-5 + 15");
+    //buffer.push_str(" 5 <= 8 ");
+    println!("Lunala> {}", buffer.clone());
 }
