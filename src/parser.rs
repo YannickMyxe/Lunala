@@ -13,6 +13,10 @@ impl Parser {
         Parser { tokens, cursor: 0 }
     }
     
+    pub fn _get_tokens(&self) -> Vec<Token> {
+        self.tokens.clone()
+    }
+    
     pub fn parse(&mut self) -> Result<Expression, LunalaErrors> {
         Ok(Expression::new(self.expression()?))
     }
