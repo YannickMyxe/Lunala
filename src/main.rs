@@ -1,10 +1,8 @@
 use crate::scanner::Scanner;
-use crate::tokens::TokenType;
-use crate::tree::ExpType::{Binary, Grouping, Unary};
-use crate::tree::{ExpType, Literal};
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
+use crate::errors::LunalaErrors;
 
 mod tokens;
 mod scanner;
@@ -12,35 +10,25 @@ mod errors;
 mod tree;
 mod parser;
 
-fn main() -> Result<(), errors::LunalaErrors > {
+fn main() -> Result<(), LunalaErrors> {
     println!("Starting Lunala!");
+    let mut contents = String::new();
+    /*
     let path = Path::new("./Lunala/examples/hello.luna");
     let mut file = File::open(&path).expect("Couldn't open file");
-    let mut contents = String::new();
+
     file.read_to_string(&mut contents).expect("couldn't read file");
+    
+     */
+    contents.push_str("2 + ( 5 - 3 ) - 1");
 
-    let mut scanner = Scanner::new(contents.as_str());
-    let tokens = scanner.scan_tokens()?;
+    let mut scanner = Scanner::new(&contents);
+    let mut parser = parser::Parser::new(scanner.scan_tokens()?);
+    
+    let expr = parser.parse()?;
+    
+    println!("Exp=> {}", expr);
 
-    println!("\nTokens:[ ");
-    for token in tokens {
-        println!("  {}", token);
-    }
-    println!("]");
-
-    let tree = Binary {
-        operator: TokenType::Star,
-        left: Box::from(Unary {
-            operator: TokenType::Minus,
-            expression: Box::from(ExpType::Literal(Literal::Number(32)))
-        }),
-        right: Box::from(
-            Grouping {
-                expression: Box::from(ExpType::Literal(Literal::Number(32))),
-            }
-        )
-    };
-    println!("\nExpression: {:#?}", tree);
-
+    
     Ok(())
 }

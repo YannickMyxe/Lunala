@@ -1,6 +1,7 @@
 use std::collections::HashMap;
+use crate::errors::{ErrorTypes, LunalaErrors};
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Token {
     token_type: TokenType,
     lexeme: Option<String>,
@@ -11,20 +12,29 @@ impl Token {
     pub fn new(token_type: TokenType, lexeme: Option<String>, line: usize) -> Token {
         Token { token_type, lexeme, _line: line }
     }
+    
+    pub fn token_type(&self) -> TokenType {
+        self.token_type.clone()
+    }
+    
+    pub fn access_lexeme(&self) -> Result<String, LunalaErrors> {
+        match self.lexeme.clone() {
+            None => { Err(LunalaErrors::new(ErrorTypes::InvalidLexemeAccess(Token::clone(self)), 0))
+            },
+            Some(val) => { Ok(val) }
+        }
+    }
 }
 
 impl std::fmt::Display for Token {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "[{}", self.token_type)?;
-        match self.lexeme {
-            Some(ref lexeme) => write!(f, ", {}", lexeme)?,
-            None => {}
-        }
+        write!(f, "[{} _{}", self.token_type, self._line)?;
+        if let Some(ref lexeme) = self.lexeme { write!(f, ", {}", lexeme)? }
         write!(f, "]")
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum TokenType {
     Slash, Comment,
 
@@ -33,11 +43,12 @@ pub enum TokenType {
     LeftCurlyBracket, RightCurlyBracket,
 
     Plus, Minus, Star, Equals, DoubleEquals, Bang, Percent, Colon, Semicolon, Dot,
-    LessThan, MoreThan,
+    LessThan, GreaterThan, LessEquals, GreaterEquals, BangEquals,
     //DoubleQuote,
     SingleQuote, AltQuote,
 
     String, Number, Identifier,
+    True, False,
 
     And, Or, If, Let,
 
@@ -63,6 +74,7 @@ impl TokenType {
             TokenType::Equals => {"Equals"}
             TokenType::DoubleEquals => {"DoubleEquals"}
             TokenType::Bang => {"Bang"}
+            TokenType::BangEquals => {"BangEquals"}
             TokenType::Percent => {"Percent"}
             TokenType::Colon => {"Colon"}
             TokenType::Semicolon => {"Semicolon"}
@@ -70,7 +82,9 @@ impl TokenType {
             TokenType::Function => {"Function"}
             TokenType::Print => {"Print"}
             TokenType::LessThan => {"LessThan"}
-            TokenType::MoreThan => {"MoreThan"}
+            TokenType::GreaterThan => {"GreaterThan"}
+            TokenType::LessEquals => {"LessThanOrEquals"}
+            TokenType::GreaterEquals => {"GreaterThanOrEquals"}
             //TokenType::DoubleQuote => {"DoubleQuote"}
             TokenType::SingleQuote => {"SingleQuote"}
             TokenType::AltQuote => {"AltQuote"}
@@ -83,6 +97,8 @@ impl TokenType {
             TokenType::Let => {"Let"}
             TokenType::Identifier => {"Identifier"}
             TokenType::EOF => {"End of File"}
+            TokenType::True => {"True"}
+            TokenType::False => {"False"}
         }.to_owned()
     }
 }
@@ -112,6 +128,8 @@ impl ReservedKeywords {
         self.insert("fn", TokenType::Function);
         self.insert("package", TokenType::Package);
         self.insert("print", TokenType::Print);
+        self.insert("true", TokenType::True);
+        self.insert("false", TokenType::False);
     }
 
     pub fn insert(&mut self, key: &str, value: TokenType) {

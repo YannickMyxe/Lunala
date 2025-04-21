@@ -1,6 +1,5 @@
-use crate::tokens::{ReservedKeywords, Token, TokenType};
-use crate::errors;
 use crate::errors::{ErrorTypes, LunalaErrors};
+use crate::tokens::{ReservedKeywords, Token, TokenType};
 
 pub struct Scanner {
     source: Vec<char>,
@@ -10,7 +9,9 @@ pub struct Scanner {
 
 impl Scanner {
     pub fn new(source: &str) -> Scanner {
-        Scanner { source: source.chars().collect(), tokens: Vec::new(), cursor: 0 }
+        let mut s = source.chars().collect::<Vec<char>>();
+        s.insert(0, ' ');
+        Scanner { source: s, tokens: Vec::new(), cursor: 0 }
     }
 
     pub fn current(&self) -> Option<&char> {
@@ -35,7 +36,7 @@ impl Scanner {
     }
 
     fn add_token(&mut self, token: Token) {
-        println!("Added token: {}", token);
+        println!("Added token: {} [{}]", token, self.tokens.len());
         self.tokens.push(token);
     }
 
@@ -43,17 +44,20 @@ impl Scanner {
         self.add_token(Token::new(token_type, None, self.cursor));
     }
 
-    pub fn scan_tokens(&mut self) -> Result<Vec<Token>, errors::LunalaErrors> {
+    pub fn scan_tokens(&mut self) -> Result<Vec<Token>, LunalaErrors> {
         while !self.at_end() {
-            let current_char = match self.advance(){
+            let current_char = match self.advance() {
                 Some(c) => c,
                 None => break,
             };
-            let current_token_binding = current_char.clone();
+            let current_token_binding = *current_char;
+            
             if current_char.is_ascii_whitespace() { continue; }
             if current_char.is_numeric() { self.number(); self.cursor-=1; continue; }
             if current_char.is_alphabetic() { self.alpha(); self.cursor-=1; continue; }
-            println!("c[{}]", current_token_binding);
+
+            //println!("c[{}]", current_char);
+            
             match current_char {
                 '/' => {
                     match self.peek() {
@@ -88,10 +92,10 @@ impl Scanner {
                     }
                 },
                 '<' => { self.add(TokenType::LessThan)},
-                '>' => { self.add(TokenType::MoreThan)},
+                '>' => { self.add(TokenType::GreaterThan)},
                 '!' => { self.add(TokenType::Bang)},
                 '"' => {
-                    let start = self.cursor.clone();
+                    let start = self.cursor;
                     let _ = self.advance();
                     while self.peek() != Some(&'"') && !self.at_end() {
                         let _ = self.advance();
@@ -118,7 +122,7 @@ impl Scanner {
                 ':' => { self.add(TokenType::Colon) },
                 '\'' => { self.add(TokenType::SingleQuote) },
                 '`' => { self.add(TokenType::AltQuote) }
-                &_ => { return self.error(ErrorTypes::InvalidToken(current_token_binding.to_string())); },
+                _ => { return self.error(ErrorTypes::InvalidToken(current_token_binding.to_string())); },
             };
         }
         self.add(TokenType::EOF);
@@ -137,7 +141,7 @@ impl Scanner {
     }
 
     pub fn number(&mut self) {
-        let start = self.cursor.clone();
+        let start = self.cursor;
         while self.is_digit(self.peek()) {
             let _ = self.advance();
         }
@@ -160,7 +164,7 @@ impl Scanner {
     }
 
     pub fn alpha(&mut self) {
-        let start = self.cursor.clone();
+        let start = self.cursor;
         while self.is_alpha_numeric(self.peek()) {
             let _ = self.advance();
         }

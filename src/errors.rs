@@ -1,3 +1,6 @@
+use std::num::ParseIntError;
+use crate::tokens::Token;
+
 pub struct LunalaErrors {
     e_type: ErrorTypes,
     line: usize,
@@ -12,6 +15,12 @@ impl LunalaErrors {
 pub enum ErrorTypes {
     InvalidToken(String),
     UnterminatedString,
+    NoPreviousItem(usize),
+    InvalidLexemeAccess(Token),
+    LexemeErrorNotANumber(Token, ParseIntError),
+    InvalidLexeme(Token),
+    Error(String),
+    ExpressionExpected,
 }
 
 impl ErrorTypes {
@@ -19,6 +28,12 @@ impl ErrorTypes {
         match self {
             ErrorTypes::InvalidToken(token) => { format!("Invalid token: {}", token) }
             ErrorTypes::UnterminatedString => { "Unterminated string".to_string() }
+            ErrorTypes::NoPreviousItem(location) => { format!("No previous item found at location: {}", location) }
+            ErrorTypes::InvalidLexemeAccess(token) => { format!("Invalid lexeme access, tried to access lexeme which doesn't have one defined: {}", token) }
+            ErrorTypes::InvalidLexeme(token) => { format!("Invalid lexeme: {}", token) }
+            ErrorTypes::LexemeErrorNotANumber(token, err) => {format!("Cannot convert lexeme `{}` to a number, reason -> {}", token, err)}
+            ErrorTypes::Error(message) => { format!("Error occurred: {}", message) }
+            ErrorTypes::ExpressionExpected => {"Expected an expression".to_string()}
         }.to_owned()
     }
 }
