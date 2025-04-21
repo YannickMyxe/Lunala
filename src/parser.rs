@@ -124,7 +124,7 @@ impl Parser {
             },
             TokenType::String => {
                 self.advance()?;
-                ExpType::Literal(Literal::String(self.previous()?.access_lexeme()?))
+                ExpType::Literal(Literal::String(self.previous()?.access_lexeme()))
             },
             TokenType::LeftBracket => {
                 self.advance()?;

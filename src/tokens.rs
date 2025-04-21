@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use crate::errors::{ErrorTypes, LunalaErrors};
 
 #[derive(Clone, Debug)]
 pub struct Token {
@@ -17,11 +16,12 @@ impl Token {
         self.token_type.clone()
     }
     
-    pub fn access_lexeme(&self) -> Result<String, LunalaErrors> {
+    pub fn access_lexeme(&self) -> String {
         match self.lexeme.clone() {
-            None => { Err(LunalaErrors::new(ErrorTypes::InvalidLexemeAccess(Token::clone(self)), 0))
+            None => { 
+                self.token_type.to_string()
             },
-            Some(val) => { Ok(val) }
+            Some(val) => { val }
         }
     }
 }

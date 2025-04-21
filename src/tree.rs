@@ -88,7 +88,7 @@ impl ExpType {
 
 impl Literal {
     pub fn new_number(token: &Token) -> Result<Literal, LunalaErrors> {
-        let value = token.access_lexeme()?.parse::<i32>();
+        let value = token.access_lexeme().parse::<i32>();
         match value {
             Ok(value) => Ok(Literal::Number(value)),
             Err(err) => Err(LunalaErrors::new(
