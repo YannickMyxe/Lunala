@@ -1,9 +1,9 @@
+use crate::errors::LunalaErrors;
+use crate::interpreter::{Interpreter, Object};
 use crate::scanner::Scanner;
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
-use crate::errors::LunalaErrors;
-use crate::interpreter::{Interpreter};
 
 mod tokens;
 mod scanner;
@@ -45,9 +45,30 @@ fn handle_file(buffer: &mut String) {
 }
 
 fn handle_repl(buffer: &mut String) {
-    //buffer.push_str("-2 + ( 8.5 - 3.5 ) - 4");
+    buffer.push_str("-2 + ( 8.5 - 3.5 ) - 4");
     //buffer.push_str("-5 + 15");
     //buffer.push_str(" 5 <= 8 ");
-    buffer.push_str("((((((((((3 + 5) + 8) + 14) + 8) * 8) / 3) + 9) - 7) + 5) - 9)");
+    //buffer.push_str("((((((((((3 + 5) + 8) + 14) + 8) * 8) / 3) + 9) - 7) + 5) - 9)");
     println!("Lunala> {}", buffer.clone());
+}
+
+#[test]
+fn test_expression_parsing() {
+    // Mock tokens for the input: -2 + (8.5 - 3.5) - 4
+    let contents = String::from("-2 + (8.5 - 3.5) + 4");
+    let mut scanner = Scanner::new(&contents);
+    let tk_opt = scanner.scan_tokens();
+    assert!(tk_opt.is_ok(), "Parser failed: {:?}", tk_opt);
+    let tokens = tk_opt.unwrap();
+    let mut parser = parser::Parser::new(tokens);
+
+    // Parse the expression
+    let result = parser.parse();
+
+    // Assert that the result is correct
+    assert!(result.is_ok(), "Parser failed: {:?}", result);
+    let expression = result.unwrap();
+
+    let obj = Interpreter::interpret(expression).unwrap();
+    assert_eq!(obj, Object::Number(7f32), "Interpret failed: {:?}", obj);
 }
