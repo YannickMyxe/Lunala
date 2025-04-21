@@ -71,4 +71,6 @@ fn test_expression_parsing() {
 
     let obj = Interpreter::interpret(expression).unwrap();
     assert_eq!(obj, Object::Number(7f32), "Interpret failed: {:?}", obj);
+    
+    println!("[Test success] {:?}", obj);
 }
