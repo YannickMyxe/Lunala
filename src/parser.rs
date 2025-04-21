@@ -102,7 +102,7 @@ impl Parser {
             TokenType::Minus | TokenType::Bang => {
                 self.advance()?;
                 let operator = self.previous()?.clone();
-                println!("Unary: [{}, {}]", operator.clone(), self.peek()?);
+                //println!("Unary: [{}, {}]", operator.clone(), self.peek()?);
                 Ok(Unary {operator, expression: Box::from(self.unary()?) })
             },
             _ => {

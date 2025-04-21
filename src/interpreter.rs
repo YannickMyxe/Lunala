@@ -45,7 +45,7 @@ impl Interpreter {
 
             }
             ExpType::Binary { operator, left, right } => {
-                println!("Binary: [{}, {}, {}]", left, operator, right);
+                //println!("Binary: [{}, {}, {}]", left, operator, right);
                 
                 let left = Self::visit_expression(left)?;
                 let right = Self::visit_expression(right)?;
@@ -85,7 +85,7 @@ impl Interpreter {
                 }
             }
             ExpType::Grouping { expression } => {
-                println!("Group: {}", expression);
+                //println!("Group: {}", expression);
                 Self::visit_expression(expression)
             }
         }
