@@ -63,41 +63,37 @@ impl Parser {
     }
 
     fn term(&mut self) -> Result<ExpType, LunalaErrors> {
-        let mut expression = self.factor();
+        let mut expression = self.factor()?;
 
-        match self.peek()?.token_type() {
-            TokenType::Plus | TokenType::Minus => {
-                self.advance()?;
-                let operator = self.previous()?.clone();
-                let right = Box::from(self.factor()?);
-                //println!("Binary-Term: [{:?}, {}, {}]", expression, operator, right);
-                expression = Ok(Binary {
-                    operator, right,
-                    left: Box::from(expression?),
-                })
-            },
-            _ => {  }
+        while matches!(self.peek()?.token_type(), TokenType::Plus | TokenType::Minus) {
+            self.advance()?;
+            let operator = self.previous()?.clone();
+            let right = Box::from(self.factor()?);
+            expression = Binary {
+                operator,
+                right,
+                left: Box::from(expression),
+            };
         }
-        expression
+
+        Ok(expression)
     }
 
     fn factor(&mut self) -> Result<ExpType, LunalaErrors> {
-        let mut expression = self.unary();
-
-        match self.peek()?.token_type() {
-            TokenType::Slash | TokenType::Star => {
-                self.advance()?;
-                let operator = self.previous()?.clone();
-                let right = Box::from(self.unary()?);
-                //println!("Binary-Factor: [{}]", operator);
-                expression = Ok(Binary {
-                    operator, right,
-                    left: Box::from(expression?)
-                })
-            }
-            _ => {}
+        let mut expression = self.unary()?;
+    
+        while matches!(self.peek()?.token_type(), TokenType::Slash | TokenType::Star) {
+            self.advance()?;
+            let operator = self.previous()?.clone();
+            let right = Box::from(self.unary()?);
+            expression = Binary {
+                operator,
+                right,
+                left: Box::from(expression),
+            };
         }
-        expression
+    
+        Ok(expression)
     }
 
     fn unary(&mut self) -> Result<ExpType, LunalaErrors> {
