@@ -45,10 +45,10 @@ fn handle_file(buffer: &mut String) {
 }
 
 fn handle_repl(buffer: &mut String) {
-    buffer.push_str("-2 + ( 8.5 - 3.5 ) - 4");
+    //buffer.push_str("-2 + ( 8.5 - 3.5 ) - 4");
     //buffer.push_str("-5 + 15");
     //buffer.push_str(" 5 <= 8 ");
-    //buffer.push_str("((((((((((3 + 5) + 8) + 14) + 8) * 8) / 3) + 9) - 7) + 5) - 9)");
+    buffer.push_str("3 + 5 + 8 + 14 + 8 * 8 / 3 + 9 - 7 + 5 - 9");
     println!("Lunala> {}", buffer.clone());
 }
 
