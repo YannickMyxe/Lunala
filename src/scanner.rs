@@ -36,7 +36,7 @@ impl Scanner {
     }
 
     fn add_token(&mut self, token: Token) {
-        println!("Added token: {} [{}]", token, self.tokens.len());
+        println!("[{}] Added token: {}", self.tokens.len(), token,);
         self.tokens.push(token);
     }
 
@@ -61,16 +61,11 @@ impl Scanner {
             match current_char {
                 '/' => {
                     match self.peek() {
-                        Some(next_char) => match next_char {
-                            '/' => {
+                        Some('/') => {
                                 self.add(TokenType::Comment);
                                 while self.peek() != Some(&'\n') && !self.at_end() { let _ = self.advance(); }
-                            }
-                            &_ => {
-                                self.add(TokenType::Slash)
-                            }
                         },
-                        None => {
+                        None | Some(_) => {
                             self.add(TokenType::Slash)
                         }
                     }
@@ -78,22 +73,44 @@ impl Scanner {
                 '*' => { self.add(TokenType::Star) },
                 '=' => {
                     match self.peek() {
-                        Some(next_char) => match next_char {
-                            '=' => {
-                                self.add(TokenType::DoubleEquals);
-                            }
-                            &_ => {
-                                self.add(TokenType::Equals)
-                            }
+                        Some('=') => {
+                            self.add(TokenType::DoubleEquals);
                         },
-                        None => {
+                        None | Some(_) => {
                             self.add(TokenType::Equals)
                         }
                     }
                 },
-                '<' => { self.add(TokenType::LessThan)},
-                '>' => { self.add(TokenType::GreaterThan)},
-                '!' => { self.add(TokenType::Bang)},
+                '<' => { 
+                    match self.peek() {
+                        Some('=') => { 
+                            self.add(TokenType::LessEquals);
+                        },
+                        None | Some(_) => {
+                            self.add(TokenType::LessThan)
+                        }
+                    }
+                },
+                '>' => {
+                    match self.peek() {
+                        Some('=') => {
+                            self.add(TokenType::GreaterEquals);
+                        },
+                        None | Some(_) => {
+                            self.add(TokenType::GreaterThan)
+                        }
+                    }
+                },
+                '!' => {
+                    match self.peek() {
+                        Some('=') => {
+                            self.add(TokenType::BangEquals);
+                        },
+                        None | Some(_) => {
+                            self.add(TokenType::Bang)
+                        }
+                    }
+                },
                 '"' => {
                     let start = self.cursor;
                     let _ = self.advance();
