@@ -1,4 +1,4 @@
-use std::num::ParseIntError;
+use std::num::ParseFloatError;
 use crate::tokens::Token;
 
 pub struct LunalaErrors {
@@ -16,7 +16,7 @@ pub enum ErrorTypes {
     InvalidToken(String),
     UnterminatedString,
     NoPreviousItem(usize),
-    LexemeErrorNotANumber(Token, ParseIntError),
+    LexemeErrorNotANumber(Token, ParseFloatError),
     Error(String),
     ExpressionExpected,
 }
