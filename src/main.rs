@@ -4,6 +4,7 @@ use crate::scanner::Scanner;
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
+use crate::tree::Precision;
 
 mod tokens;
 mod scanner;
@@ -70,7 +71,8 @@ fn test_expression_parsing() {
     let expression = result.unwrap();
 
     let obj = Interpreter::interpret(expression).unwrap();
-    assert_eq!(obj, Object::Number(7f32), "Interpret failed: {:?}", obj);
+    let number: Precision = 7 as Precision;
+    assert_eq!(obj, Object::Number(number), "Interpret failed: {:?}", obj);
     
     println!("[Test success] {:?}", obj);
 }

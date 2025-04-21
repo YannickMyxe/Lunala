@@ -6,6 +6,8 @@ pub struct Expression {
     expression_type: ExpType,
 }
 
+pub type Precision = f64;
+
 #[derive(Debug, Clone)]
 pub enum ExpType {
     Literal(Literal),
@@ -26,7 +28,7 @@ pub enum ExpType {
 #[derive(Debug, Clone)]
 #[derive(PartialEq)]
 pub enum Literal {
-    Number(f32),
+    Number(Precision),
     Bool(bool),
     String(String),
 }
@@ -93,7 +95,7 @@ impl ExpType {
 
 impl Literal {
     pub fn new_number(token: &Token) -> Result<Literal, LunalaErrors> {
-        let value = token.access_lexeme().parse::<f32>();
+        let value = token.access_lexeme().parse::<Precision>();
         match value {
             Ok(value) => Ok(Literal::Number(value)),
             Err(err) => Err(LunalaErrors::new(
@@ -110,7 +112,7 @@ impl Literal {
         }
     }
     
-    pub fn _get_number(&self) -> Result<f32, LunalaErrors> {
+    pub fn _get_number(&self) -> Result<Precision, LunalaErrors> {
         match self {
             Literal::Number(value) => Ok(*value),
             _ => Err(LunalaErrors::new(ErrorTypes::ErrorNotANumber(self.get_string(), None), 0))
