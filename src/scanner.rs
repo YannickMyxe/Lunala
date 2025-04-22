@@ -93,18 +93,18 @@ impl Scanner {
                 }
                 ('!', _) => { self.add(TokenType::Bang) },
                 ('"', _) => {
-                    let start = self.cursor;
-                    let _ = self.advance();
+                    let start = self.cursor + 1;
                     while self.peek() != Some(&'"') && !self.at_end() {
-                        let _ = self.advance();
+                        let _  = self.advance();
+                        if self.peek() == Some(&'\n') { let _ = self.advance(); }
                     }
+                    println!("{}", self.source[start..self.cursor].iter().collect::<String>());
                     if self.at_end() {
                         return self.error(ErrorTypes::UnterminatedString);
                     }
-                    let _ = self.advance();
-                    let value: String = self.source[start..self.cursor-1].iter().collect();
+                    self.advance();
+                    let value: String = self.source[start..self.cursor].iter().collect();
                     self.add_token(Token::new(TokenType::String, Some(value), self.cursor));
-                    self.cursor-=1;
                 },
                 (';', _) => { self.add(TokenType::Semicolon) },
                 ('+', _) => { self.add(TokenType::Plus)}
