@@ -30,7 +30,6 @@ fn main() -> Result<(), LunalaErrors> {
 }
 
 fn interpret(buffer: &str) -> Result<(), LunalaErrors> {
-    //todo!("Reworking the parser");
     let mut scanner = Scanner::new(buffer);
     let mut parser = parser::Parser::new(scanner.scan_tokens()?);
 
