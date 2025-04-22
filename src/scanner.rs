@@ -98,7 +98,6 @@ impl Scanner {
                         let _  = self.advance();
                         if self.peek() == Some(&'\n') { let _ = self.advance(); }
                     }
-                    println!("{}", self.source[start..self.cursor].iter().collect::<String>());
                     if self.at_end() {
                         return self.error(ErrorTypes::UnterminatedString);
                     }

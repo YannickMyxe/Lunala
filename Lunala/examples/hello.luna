@@ -1,2 +1,4 @@
 print 10 + 8;
 print "Hello";
+
+print "Hello, World!";
