@@ -1,7 +1,9 @@
 use crate::errors::{ErrorTypes, LunalaErrors};
-use crate::tokens::{Token, TokenType};
 use crate::expressions::ExpType::{Binary, Grouping, Unary};
-use crate::expressions::{ExpType, Expression, Literal};
+use crate::expressions::{ExpType, Literal};
+use crate::statement;
+use crate::statement::Statement;
+use crate::tokens::{Token, TokenType};
 
 pub struct Parser {
     tokens: Vec<Token>,
@@ -17,8 +19,34 @@ impl Parser {
         self.tokens.clone()
     }
     
-    pub fn parse(&mut self) -> Result<Expression, LunalaErrors> {
-        Ok(Expression::new(self.expression()?))
+    pub fn parse(&mut self) -> Result<statement::Statements, LunalaErrors> {
+        let mut statements = Vec::new();
+        while !self.at_end()? {
+            statements.push(self.statement()?);
+        }
+        Ok(statements)
+    }
+
+    fn statement(&mut self) -> Result<Statement, LunalaErrors> {
+        match self.peek()?.token_type() {
+            TokenType::Print => {
+                self.advance()?;
+                self.print_statement()
+            }
+            _ => self.expression_statement()
+        }
+    }
+
+    fn print_statement(&mut self) -> Result<Statement, LunalaErrors> {
+        let expression = self.expression()?;
+        self.consume(TokenType::Semicolon, "Expected a `;` after value.")?;
+        Ok(Statement::Print(Statement::new_print(expression)))
+    }
+    
+    fn expression_statement(&mut self) -> Result<Statement, LunalaErrors> {
+        let expression = self.expression()?;
+        self.consume(TokenType::Semicolon, "Expected a `;` after value.")?;
+        Ok(Statement::Expression(Statement::new_expression(expression)))
     }
 
     fn expression(&mut self) -> Result<ExpType, LunalaErrors> {

@@ -30,14 +30,12 @@ fn main() -> Result<(), LunalaErrors> {
 }
 
 fn interpret(buffer: &str) -> Result<(), LunalaErrors> {
+    //todo!("Reworking the parser");
     let mut scanner = Scanner::new(buffer);
     let mut parser = parser::Parser::new(scanner.scan_tokens()?);
 
-    let expr = parser.parse()?;
-    println!("Exp=> {}", expr);
-
-    let obj = Interpreter::interpret(expr)?;
-    println!("[Lunala]> {}", obj);
+    let expressions = parser.parse()?;
+    Interpreter::interpret(expressions)?;
 
     Ok(())
 }
@@ -72,31 +70,4 @@ fn handle_repl() -> Result<(), LunalaErrors> {
         }
         
     }
-}
-
-#[test]
-fn test_expression_parsing() {
-    use crate::expressions::Precision;
-    use crate::interpreter::{Object};
-    
-    // Mock tokens for the input: -2 + (8.5 - 3.5) - 4
-    let contents = String::from("-2 + (8.5 - 3.5) + 4");
-    let mut scanner = Scanner::new(&contents);
-    let tk_opt = scanner.scan_tokens();
-    assert!(tk_opt.is_ok(), "Parser failed: {:?}", tk_opt);
-    let tokens = tk_opt.unwrap();
-    let mut parser = parser::Parser::new(tokens);
-
-    // Parse the expression
-    let result = parser.parse();
-
-    // Assert that the result is correct
-    assert!(result.is_ok(), "Parser failed: {:?}", result);
-    let expression = result.unwrap();
-
-    let obj = Interpreter::interpret(expression).unwrap();
-    let number: Precision = 7 as Precision;
-    assert_eq!(obj, Object::Number(number), "Interpret failed: {:?}", obj);
-
-    println!("[Test success] {:?}", obj);
 }

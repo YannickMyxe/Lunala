@@ -25,8 +25,7 @@ pub enum ExpType {
     }
 }
 
-#[derive(Debug, Clone)]
-#[derive(PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Literal {
     Number(Precision),
     Bool(bool),

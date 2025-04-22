@@ -1,6 +1,8 @@
 use crate::errors::{ErrorTypes, LunalaErrors};
+use crate::expressions::{ExpType, Literal};
+use crate::statement;
+use crate::statement::{Statement, StatementTrait, Statements};
 use crate::tokens::TokenType;
-use crate::expressions::{ExpType, Expression, Literal};
 
 pub struct Interpreter {}
 
@@ -109,7 +111,34 @@ impl Interpreter {
         }
     }
 
-    pub fn interpret(expression: Expression) -> Result<Object, LunalaErrors> {
-         Self::visit_expression(&expression._get_type())
+    pub fn interpret(statements: Statements) -> Result<(), LunalaErrors> {
+         //Self::visit_expression(&expression._get_type())
+        for statement in statements {
+            Self::execute(statement)?
+        }
+        Ok(())
+    }
+    
+    fn execute(statement: Statement) -> Result<(), LunalaErrors> {
+        match statement {
+            Statement::Expression(exp) => {
+                Self::visit_expression_statement(exp)?
+            }
+            Statement::Print(exp) => {
+                Self::visit_print_statement(exp)?
+            }
+        }
+        Ok(())
+    }
+    
+    fn visit_expression_statement(expression: statement::Expression) -> Result<(), LunalaErrors> {
+        Self::visit_expression(&expression.expression())?;
+        Ok(())
+    }
+    
+    fn visit_print_statement(expression: statement::PrintExpression) -> Result<(), LunalaErrors> {
+        let obj = Self::visit_expression(&expression.expression())?;
+        println!("{}", obj);
+        Ok(())
     }
 }
