@@ -1,5 +1,5 @@
 use crate::tokens::Token;
-use crate::tree::ExpType;
+use crate::expressions::ExpType;
 use std::num::ParseFloatError;
 
 pub struct LunalaErrors {

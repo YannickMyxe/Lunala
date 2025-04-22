@@ -1,7 +1,7 @@
 use crate::errors::{ErrorTypes, LunalaErrors};
 use crate::tokens::{Token, TokenType};
-use crate::tree::ExpType::{Binary, Grouping, Unary};
-use crate::tree::{ExpType, Expression, Literal};
+use crate::expressions::ExpType::{Binary, Grouping, Unary};
+use crate::expressions::{ExpType, Expression, Literal};
 
 pub struct Parser {
     tokens: Vec<Token>,

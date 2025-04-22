@@ -1,6 +1,6 @@
 use crate::errors::{ErrorTypes, LunalaErrors};
 use crate::tokens::TokenType;
-use crate::tree::{ExpType, Expression, Literal};
+use crate::expressions::{ExpType, Expression, Literal};
 
 pub struct Interpreter {}
 

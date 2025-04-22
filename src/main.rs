@@ -9,9 +9,10 @@ use std::path::Path;
 mod tokens;
 mod scanner;
 mod errors;
-mod tree;
+mod expressions;
 mod parser;
 mod interpreter;
+mod statement;
 
 fn main() -> Result<(), LunalaErrors> {
     println!("[Lunala]");
@@ -75,7 +76,7 @@ fn handle_repl() -> Result<(), LunalaErrors> {
 
 #[test]
 fn test_expression_parsing() {
-    use crate::tree::Precision;
+    use crate::expressions::Precision;
     use crate::interpreter::{Object};
     
     // Mock tokens for the input: -2 + (8.5 - 3.5) - 4
