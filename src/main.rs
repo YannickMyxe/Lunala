@@ -23,7 +23,7 @@ fn main() -> Result<(), LunalaErrors> {
     if !args.is_empty() {
         handle_file()?;
     } else {
-        handle_repl()?;
+        handle_repl();
     }
     
     Ok(())
@@ -49,7 +49,7 @@ fn handle_file() -> Result<(), LunalaErrors> {
     Ok(())
 }
 
-fn handle_repl() -> Result<(), LunalaErrors> {
+fn handle_repl() {
     let mut buffer = String::new();
     loop {
         buffer.clear();
@@ -62,11 +62,20 @@ fn handle_repl() -> Result<(), LunalaErrors> {
             }
         }
         match buffer.as_str().trim() {
-            "QUIT" => { return Ok(()) }
+            "QUIT" => { return }
             _ => {
-                interpret(&buffer)?;
+                match interpret(&buffer) {
+                    Ok(_) => {}
+                    Err(error) => {
+                        print_error(error);
+                    }
+                }
             }
         }
         
     }
+}
+
+fn print_error(error: LunalaErrors) {
+    eprintln!("Error: {style}{error}{reset}", error = error, style = "\x1b[31;1;4m", reset = "\x1b[0m");
 }
