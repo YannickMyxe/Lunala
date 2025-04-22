@@ -1,4 +1,16 @@
+print ">Printing strings";
+print "Hello, World!";
+
+print ">Printing numbers";
 print 10 + 8;
 print (3*5) - (2*5);
 print -5 * (( 10 * 10 ) - ( 5 * 5)) + 300 ;
-print "Hello, World!";
+
+print ">Printing Booleans";
+print true;
+print false;
+
+print 5 <= 10;
+print "hi" == "hi";
+print true != true;
+print !true;
