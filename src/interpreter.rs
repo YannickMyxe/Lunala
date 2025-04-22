@@ -32,7 +32,7 @@ impl Interpreter {
                 Ok(Object::from_literal(literal.clone()))
             }
             ExpType::Unary { operator, expression } => {
-                println!("Unary: [{}, {}]", operator, expression);
+                //println!("Unary: [{}, {}]", operator, expression);
                 match (operator.token_type(), *expression.clone()) {
                     (TokenType::Minus, ExpType::Literal(literal)) => {
                         let number = - literal._get_number()?;
